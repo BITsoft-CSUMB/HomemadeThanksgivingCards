@@ -11,8 +11,11 @@ Team #6 - BITsoft:
 Notes:
   * All of the functions below rely on the 'mediaPath' variable being set
     correctly. Ensure 'mediaPath' is set to the correct directory 
-    ('originals') prior to calling each function. This can be done in the
-    console by calling 'setMediaPath', like:
+    ('originals') prior to calling each function. If your environment
+    allows you, you can use the 'setMediaPath' function that is loaded
+    when this file is loaded. Alternatively, this can be done in the
+    console by calling 'setMediaPath' (comment out method calls at bottom
+    of file), like:
       # OSX
       mediaPath = setMediaPath("YOUR_PATH_HERE/HomemadeThanksgivingCards/originals/")
       # or Windows
@@ -26,7 +29,16 @@ Requirements for each card:
   * At least three different images.
 """
 
-def generateCard1(): #Matt V
+def generateCard1():
+  card = getBlankCard()
+  return card
+
+def generateCard2():
+  card = getBlankCard()
+  applyPumpkinPie(card)
+  return card
+
+def generateCard3(): #Matt V
   greenScreen = [50, 255, 50] # R G B values for green screen
   colorPrecision = 100 # how close the colors has to be to remove the alpha
   card = makePicture(getMediaPath("fatTurkey.jpg"))
@@ -46,16 +58,7 @@ def generateCard1(): #Matt V
   
   return card
   
-def generateCard2():
-  card = getBlankCard()
-  return card
-  
-def generateCard3():
-  card = getBlankCard()
-  applyPumpkinPie(card)
-  return card
-  
-def generateCard4():
+def generateCard4(): # Brittany Mazza
   card = getBlankCard()
   addSunshine(card)
   addGrass(card)
@@ -64,17 +67,34 @@ def generateCard4():
   return card
 
 """
-Methods below are used to generate all cards.
+Methods below are used to generate cards 1, 2, and 4.
 """
 def getBlankCard():
   # Create 5x7 card
   return makeEmptyPicture(945, 675)
 
-
 """
 Methods below are used to generate card 1.
 """
 
+"""
+Methods below are used to generate card 2.
+"""
+# Apply pumpkin pie to card.
+def applyPumpkinPie(card):
+  piePic = makePicture("pumpkin-pie.jpg")
+  # Apply to bottom right corner of card
+  startX = getWidth(card) - getWidth(piePic)
+  startY = getHeight(card) - getHeight(piePic)
+  for x in range(0, getWidth(piePic)-1):
+    for y in range(0, getHeight(piePic)-1):
+      piePixel = getPixel(piePic, x, y)
+      piePixelColor = getColor(piePixel)
+      setColor(getPixel(card, startX + x, startY + y), piePixelColor)
+
+"""
+Methods below are used to generate card 3.
+"""
 # Function: python copy with alpha, copy source image to target image and remove transparent pixels
 # Params: source image, target image, target x for 0, target y for 0 
 # Returns: Resized picture
@@ -90,27 +110,7 @@ def pyCopyA(source, target, targetX, targetY, alphaR, alphaG, alphaB, precision)
           sourceColor = getColor(sourcePixel)
           if ( abs(sourceColor.getRed() - alphaR) + abs(sourceColor.getBlue() - alphaB) + abs(sourceColor.getGreen() - alphaG) ) > precision: 
             destPixel = getPixel(target, x + targetX, y + targetY)
-            destPixel.setColor(sourceColor)    
-
-
-"""
-Methods below are used to generate card 2.
-"""
-
-"""
-Methods below are used to generate card 3.
-"""
-# Apply pumpkin pie to card.
-def applyPumpkinPie(card):
-  piePic = makePicture("pumpkin-pie.jpg")
-  # Apply to bottom right corner of card
-  startX = getWidth(card) - getWidth(piePic)
-  startY = getHeight(card) - getHeight(piePic)
-  for x in range(0, getWidth(piePic)-1):
-    for y in range(0, getHeight(piePic)-1):
-      piePixel = getPixel(piePic, x, y)
-      piePixelColor = getColor(piePixel)
-      setColor(getPixel(card, startX + x, startY + y), piePixelColor)
+            destPixel.setColor(sourceColor)
 
 """
 Methods below are used to generate card 4.
