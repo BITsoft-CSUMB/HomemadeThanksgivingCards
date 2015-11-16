@@ -26,8 +26,24 @@ Requirements for each card:
   * At least three different images.
 """
 
-def generateCard1():
-  card = getBlankCard()
+def generateCard1(): #Matt V
+  greenScreen = [50, 255, 50] # R G B values for green screen
+  colorPrecision = 100 # how close the colors has to be to remove the alpha
+  card = makePicture(getMediaPath("fatTurkey.jpg"))
+  santas = makePicture(getMediaPath("santa.jpg"))
+  dragon = makePicture(getMediaPath("dinosaur.jpg"))
+  flamethrower = makePicture(getMediaPath("flamethrower.jpg"))
+  
+  textA = "Happy Thanksgiving! No, it's not Christmas yet."
+  textB = "-Matt"
+  
+  pyCopyA(santas, card, 0, 290, greenScreen[0], greenScreen[1], greenScreen[2], 200)    
+  pyCopyA(flamethrower, card, 140, 510, greenScreen[0], greenScreen[1], greenScreen[2], 200)    
+  pyCopyA(dragon, card, -500, 400, greenScreen[0], greenScreen[1], greenScreen[2], 200)    
+
+  addTextWithStyle(card, 60, 381, textA, makeStyle(serif, bold, 24))
+  addTextWithStyle(card, 371, 420, textB, makeStyle(serif, bold, 24))
+  
   return card
   
 def generateCard2():
@@ -57,6 +73,24 @@ def getBlankCard():
 """
 Methods below are used to generate card 1.
 """
+
+# Function: python copy with alpha, copy source image to target image and remove transparent pixels
+# Params: source image, target image, target x for 0, target y for 0 
+# Returns: Resized picture
+def pyCopyA(source, target, targetX, targetY, alphaR, alphaG, alphaB, precision):
+  targetWidth = target.getWidth()
+  targetHeight = target.getHeight()
+
+  for y in range( 0, source.getHeight() ): # work from top to bottom
+    if (y + targetY < targetHeight) and (y + targetY > 0): #Y range check so we can go crazy and not worry
+      for x in range( 0, source.getWidth() ):
+        if (x + targetX < targetWidth) and (x + targetX > 0): #X range check so we can go crazy and not worry
+          sourcePixel = getPixel(source, x, y)
+          sourceColor = getColor(sourcePixel)
+          if ( abs(sourceColor.getRed() - alphaR) + abs(sourceColor.getBlue() - alphaB) + abs(sourceColor.getGreen() - alphaG) ) > precision: 
+            destPixel = getPixel(target, x + targetX, y + targetY)
+            destPixel.setColor(sourceColor)    
+
 
 """
 Methods below are used to generate card 2.
@@ -111,3 +145,9 @@ def paintBackgroundOrange(card):
     for y in range(0, getHeight(card)-1):
       pixel = getPixel(card, x, y)
       setColor(pixel, bgColor)
+
+setMediaPath()
+show(generateCard1())
+show(generateCard2())
+show(generateCard3())
+show(generateCard4())
