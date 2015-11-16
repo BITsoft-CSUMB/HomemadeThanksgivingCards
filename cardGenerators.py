@@ -57,7 +57,8 @@ def generateCard3():
   
 def generateCard4():
   card = getBlankCard()
-  paintBackgroundOrange(card)
+  addSunshine(card)
+  addGrass(card)
   applyTurkey1(card)
   addQuestionableHappyThanksgivingText(card)
   return card
@@ -120,12 +121,13 @@ def addQuestionableHappyThanksgivingText(card):
   textStyle = makeStyle(serif, bold, 13)
   startX = (getWidth(card)/20)*11
   startY = (getHeight(card)/20)*7
-  addTextWithStyle(card, startX, startY, text, textStyle, green)
+  textColor = makeColor(153, 0, 0)
+  addTextWithStyle(card, startX, startY, text, textStyle, textColor)
 
 # Apply the turkey holding the sign to a card.
 def applyTurkey1(card):
   turkeyPic = makePicture("turkey1.jpg")
-  # Apply to center of card
+  # Apply to center of card.
   startX = (getWidth(card) - getWidth(turkeyPic))/2
   startY = (getHeight(card) - getHeight(turkeyPic))/2
   for x in range(0, getWidth(turkeyPic)-1):
@@ -138,13 +140,28 @@ def applyTurkey1(card):
         cardPixel = getPixel(card, startX + x, startY + y)
         setColor(cardPixel, turkeyPixelColor)
 
-# Color the entire pic a particular color.
-def paintBackgroundOrange(card):
-  bgColor = makeColor(255, 153, 0)
-  for x in range(0, getWidth(card)-1):
-    for y in range(0, getHeight(card)-1):
+# Add sunshine to card.
+def addSunshine(card):
+  sunshinePic = makePicture("sunshine.jpg")
+  # Apply to top of card.
+  for x in range(0, getWidth(sunshinePic)):
+    for y in range(0, getHeight(sunshinePic)):
       pixel = getPixel(card, x, y)
-      setColor(pixel, bgColor)
+      sunshineColor = getColor(getPixel(sunshinePic, x, y))
+      setColor(pixel, sunshineColor)
+
+# Add grass to card.
+def addGrass(card):
+  grassPic = makePicture("grass.png")
+  # Apply to base of card.
+  startY = getHeight(card) - getHeight(grassPic)
+  for x in range(0, getWidth(grassPic)):
+    for y in range(0, getHeight(grassPic)):
+      grassColor = getColor(getPixel(grassPic, x, y))
+      # Only color if grass image doesn't look black, which is how 
+      # getColor interprets the transparency.
+      if distance(grassColor, black) > 0.25:
+        setColor(getPixel(card, x, startY + y), grassColor)
 
 setMediaPath()
 show(generateCard1())
