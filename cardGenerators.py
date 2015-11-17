@@ -29,9 +29,18 @@ Requirements for each card:
   * At least three different images.
 """
 
-def generateCard1():
-  card = getBlankCard()
-  return card
+def generateCard1(): #John L
+  bckgrnd = makePicture(getMediaPath("cardFrame.jpg"))
+  pic = makePicture(getMediaPath("warmup.jpg"))
+  if (getWidth(pic) > getWidth(bckgrnd)):
+    pic = shrink(pic, int(getWidth(pic)/getWidth(bckgrnd)))
+  else:
+    bckgrnd = shrink(bckgrnd, int(getWidth(bckgrnd)/getWidth(pic)))
+  pic = chromakey(pic, bckgrnd, 0, 0)
+  pic = addThxMessage(pic, "Happy Thanksgiving")
+  csumbLogo = makePicture(getMediaPath("csumb-logo-white.png"))
+  pic = chromakey(csumbLogo, pic, getWidth(pic)-getHeight(csumbLogo)-10, getHeight(pic)-getHeight(csumbLogo)-10, True, 120)
+  return pic
 
 def generateCard2():
   card = getBlankCard()
@@ -76,7 +85,46 @@ def getBlankCard():
 """
 Methods below are used to generate card 1.
 """
+def chromakey(newPic, bckPic, targetX = 0, targetY = 0, overRide = False, tolerance = 60):
+  for x in range(0, getWidth(newPic)):
+    if x + targetX < getWidth(bckPic):
+      for y in range(0, getHeight(newPic)):
+        if y + targetY < getHeight(bckPic):
+          pix = getPixel(newPic, x, y)
+          bPix = getPixel(bckPic, x + targetX, y + targetY)
+          color = getColor(pix)
+          bColor = getColor(bPix)
+          if (distance(color, Color(0, 215, 0)) > tolerance) and ((distance(bColor, Color(0, 215, 0)) < 60) or (distance(bColor, Color(0, 131, 0)) < 60) or (distance(bColor, Color(45, 221, 45)) < 60) or overRide):
+            newPix = getPixel(bckPic, x + targetX, y + targetY)
+            setColor(bPix, color)
+  return bckPic
 
+def shrink(origPic, factor):
+  if factor <= 1:
+    return origPic
+  width = getWidth(origPic)
+  height = getHeight(origPic)
+  newPic = makeEmptyPicture(int(width / factor), int(height / factor))
+  oldX = 0
+  for newX in range(0, getWidth(newPic)):
+    oldY = 0
+    for newY in range(0, getHeight(newPic)):
+      oldPix = getPixel(origPic, oldX, oldY)
+      newPix = getPixel(newPic, newX, newY)
+      setColor(newPix, getColor(oldPix))
+      oldY += factor
+    oldX += factor
+  return newPic
+
+def addThxMessage(pic, text):
+  size = 48  #centering only kinda works with 48pt text
+  xPos = int((getWidth(pic)/2) - (len(text) * 12.6))
+  yPos = size
+  style = makeStyle('Palatino Linotype', italic + bold, size)
+  addTextWithStyle(pic, xPos+2, yPos+2, text, style, black)
+  addTextWithStyle(pic, xPos+1, yPos+1, text, style, gray)
+  addTextWithStyle(pic, xPos, yPos, text, style, orange)
+  return pic
 """
 Methods below are used to generate card 2.
 """
